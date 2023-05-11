@@ -1,0 +1,22 @@
+<button
+  (click)="onClick.emit()"
+  [ngClass]="{
+      'flex flex-row gap-2 items-center font-medium text-base border': true,
+      'px-2 py-1 rounded': label != undefined,
+      'p-1 rounded-full': icon != undefined && label == undefined,
+      'border-primary bg-primary hover:border-primary-focus hover:bg-primary-focus text-primary-content': label != undefined && type == 'primary',
+      'border-primary hover:border-primary-focus hover:bg-primary-focus text-primary hover:text-primary-content': label != undefined && type == 'secondary',
+      'border-transparent hover:border-primary text-neutral hover:text-primary': label != undefined && type == 'tertiary',
+      'border-error bg-error hover:bg-error-focus text-error-content': label != undefined && type == 'destructive',
+      'border-transparent text-neutral hover:text-primary': label == undefined && ['primary', 'secondary'].includes(type),
+      'border-transparent text-neutral hover:text-neutral-focus': label == undefined && type == 'tertiary',
+      'border-transparent text-neutral hover:text-error': label == undefined && type == 'destructive',
+    }"
+>
+  <app-icon
+    *ngIf="icon != undefined"
+    [name]="icon"
+    [size]="label != undefined ? 'sm' : 'md'"
+  ></app-icon>
+  {{ label }}
+</button>
