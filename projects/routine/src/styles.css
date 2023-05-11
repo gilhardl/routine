@@ -30,3 +30,6 @@ h5 {
 h6 {
   @apply text-base font-medium;
 }
+a {
+  @apply text-primary font-medium hover:text-primary-focus;
+}
