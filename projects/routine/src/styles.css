@@ -1,1 +1,32 @@
-/* You can add global styles to this file, and also import other style files */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+*,
+*::before,
+*::after {
+  @apply box-border m-0 p-0;
+}
+
+body {
+  @apply w-full min-h-screen bg-base-100 text-base font-normal text-base-100-content;
+}
+
+h1 {
+  @apply text-4xl font-bold;
+}
+h2 {
+  @apply text-3xl font-bold;
+}
+h3 {
+  @apply text-2xl font-semibold;
+}
+h4 {
+  @apply text-xl font-semibold;
+}
+h5 {
+  @apply text-base font-semibold;
+}
+h6 {
+  @apply text-base font-medium;
+}
