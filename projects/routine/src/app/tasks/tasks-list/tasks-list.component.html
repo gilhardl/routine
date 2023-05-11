@@ -1,0 +1,9 @@
+<div class="flex flex-col gap-px max-w-full">
+  <app-tasks-list-item
+    *ngFor="let task of tasks"
+    [task]="task"
+    [selected]="task.id === selectedTask?.id"
+    (click)="selectTask(task)"
+    (delete)="deleteTask($event)"
+  ></app-tasks-list-item>
+</div>

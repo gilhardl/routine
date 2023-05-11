@@ -1,0 +1,25 @@
+<ng-container *ngIf="task || !error; else loading">
+  <header class="flex flex-row">
+    <h1
+      class="flex-grow"
+      #taskTitle
+      contenteditable
+      (input)="onTitleChange(taskTitle.innerHTML)"
+    >
+      {{ task?.title }}
+    </h1>
+    <app-button icon="close" (click)="close.emit()"></app-button>
+  </header>
+  <textarea
+    #taskContent
+    class="w-full min-h-[300px]"
+    [value]="task?.content"
+    (input)="onContentChange(taskContent.value)"
+  ></textarea>
+</ng-container>
+
+<ng-template #loading>
+  <div class="w-full h-full flex justify-center items-center">
+    <img src="assets/loading-indicator.svg" />
+  </div>
+</ng-template>

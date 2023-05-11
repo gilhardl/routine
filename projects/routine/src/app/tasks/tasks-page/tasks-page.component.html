@@ -1,1 +1,28 @@
-<p>tasks-page works!</p>
+<section
+  class="h-full flex-grow"
+  [ngClass]="{
+    'max-w-full': !selectedTask,
+    'pr-2 max-w-[33%]': selectedTask,
+  }"
+>
+  <h1 class="mb-4 px-2">Routine</h1>
+  <app-tasks-list
+    (select)="selectTask($event)"
+    (deleted)="handleDeletedtask($event)"
+  ></app-tasks-list>
+</section>
+
+<article
+  class=""
+  [ngClass]="{
+    'w-0': !selectedTask,
+    'w-2/3 pl-2 border-l border-neutral': selectedTask,
+  }"
+>
+  <ng-container *ngIf="selectedTask">
+    <app-task-details
+      [taskId]="selectedTask.id"
+      (close)="unselectTask()"
+    ></app-task-details>
+  </ng-container>
+</article>
