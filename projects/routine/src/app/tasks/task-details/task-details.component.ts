@@ -7,8 +7,7 @@ import { TasksService } from '../tasks.service';
 @Component({
   selector: 'app-task-details',
   templateUrl: './task-details.component.html',
-  styles: [
-  ]
+  styleUrls: ['./task-details.component.css'],
 })
 export class TaskDetailsComponent implements OnChanges, OnDestroy {
   @Input() taskId?: string;

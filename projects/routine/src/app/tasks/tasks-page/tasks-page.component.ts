@@ -5,7 +5,7 @@ import { Task } from '../task';
 @Component({
   selector: 'app-tasks-page',
   templateUrl: './tasks-page.component.html',
-  styles: [':host { @apply min-h-screen px-2 py-2 flex flex-row; }']
+  styleUrls: ['./tasks-page.component.css']
 })
 export class TasksPageComponent {
   selectedTask?: Task;

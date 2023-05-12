@@ -1,0 +1,11 @@
+h4 {
+  width: fit-content;
+}
+
+mat-nav-list {
+  padding: 0;
+}
+
+button[mat-icon-button][matListItemMeta] {
+  align-self: center;
+}

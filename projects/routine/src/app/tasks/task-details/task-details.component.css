@@ -1,0 +1,24 @@
+header {
+  display: flex;
+  align-items: center;
+}
+
+header button[mat-icon-button] {
+  margin-bottom: 0.5rem;
+}
+
+h1 {
+  flex: 1;
+}
+
+textarea {
+  width: 100%;
+}
+
+div.loading-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

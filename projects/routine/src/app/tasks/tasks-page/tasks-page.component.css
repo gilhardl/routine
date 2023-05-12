@@ -1,0 +1,23 @@
+:host {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+}
+
+section {
+  max-width: 100%;
+  height: 100%;
+  flex: 1;
+}
+section.reduced {
+  padding-right: 0.5rem;
+  max-width: 33%;
+}
+
+article {
+  flex: 0;
+}
+article.visible {
+  flex: 2;
+  padding-left: 0.5rem;
+}

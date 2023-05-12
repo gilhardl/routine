@@ -1,25 +1,30 @@
 <ng-container *ngIf="task || !error; else loading">
-  <header class="flex flex-row">
+  <header>
     <h1
-      class="flex-grow"
       #taskTitle
       contenteditable
-      (input)="onTitleChange(taskTitle.innerHTML)"
+      [textContent]="task?.title"
+      (input)="onTitleChange(taskTitle.textContent ?? '')"
+    ></h1>
+    <button
+      class="small"
+      mat-icon-button
+      aria-label="Close task details"
+      (click)="close.emit()"
     >
-      {{ task?.title }}
-    </h1>
-    <app-button icon="close" (click)="close.emit()"></app-button>
+      <mat-icon>close</mat-icon>
+    </button>
   </header>
   <textarea
     #taskContent
-    class="w-full min-h-[300px]"
     [value]="task?.content"
     (input)="onContentChange(taskContent.value)"
+    rows="20"
   ></textarea>
 </ng-container>
 
 <ng-template #loading>
-  <div class="w-full h-full flex justify-center items-center">
-    <img src="assets/loading-indicator.svg" />
+  <div class="loading-container">
+    <mat-spinner></mat-spinner>
   </div>
 </ng-template>
