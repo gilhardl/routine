@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, map } from 'rxjs';
 
-import { Task } from './task';
-import { TASKS } from './mock-data';
+import { Task } from './task.interface';
+import { TASKS } from './task.mock-data';
 
 @Injectable({
   providedIn: 'root'
