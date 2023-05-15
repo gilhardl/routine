@@ -1,8 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { ContentEditorComponent, ContentEditorModule } from 'content-editor';
-
 import { HomePageComponent } from './home-page/home-page.component';
 import { NotFoundPageComponent } from './not-found-page/not-found-page.component';
 
@@ -21,8 +19,7 @@ const routes: Routes = [
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
   exports: [
-    RouterModule,
-    ContentEditorModule
+    RouterModule
   ]
 })
 export class AppRoutingModule { }
