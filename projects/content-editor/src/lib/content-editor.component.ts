@@ -1,12 +1,13 @@
 import { AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Inject, Input, OnDestroy, Output, ViewChild, forwardRef } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { FocusMonitor } from '@angular/cdk/a11y';
-import { Subject, map, take, takeUntil, tap, } from 'rxjs';
+import { Subject, map, take, takeUntil } from 'rxjs';
 import { EditorConfig, OutputBlockData, OutputData, SanitizerConfig } from '@editorjs/editorjs';
 
 import { DEFAULT_HOLDER_ID, createEditorConfig } from './editor-config';
 import { ContentEditorService } from './content-editor.service';
 import { EDITOR_CONFIG } from './content-editor.token';
+import { Content } from './content.interface';
 
 @Component({
   selector: 'content-editor',
@@ -25,6 +26,11 @@ export class ContentEditorComponent implements OnDestroy, AfterContentInit, Cont
    * The HTML element reference to the `EditorJS` container
    */
   @ViewChild('contentEditor', { read: ElementRef, static: true }) private elementRef!: ElementRef<HTMLDivElement>;
+
+  /**
+   * Initial set of block data to render inside the component
+   */
+  @Input() content?: Content;
 
   /**
    * ID of the element where `EditorJS` will be appended
@@ -60,32 +66,7 @@ export class ContentEditorComponent implements OnDestroy, AfterContentInit, Cont
   /**
    * Height of Editor's bottom area that allows to set focus on the last Block
    */
-  @Input() minHeight?: number;
-
-  /**
-   * Initial set of block data to render inside the component
-   */
-  @Input() blocks: OutputBlockData[] = [];
-
-  /**
-   * Emits if the content from the `EditorJS` instance has been saved to the component value
-   */
-  @Output() hasSaved = new EventEmitter<boolean>();
-
-  /**
-   * Emits if the component has been touched
-   */
-  @Output() isTouched = new EventEmitter<boolean>();
-
-  /**
-   * Emits if the component is focused
-   */
-  @Output() isFocused = new EventEmitter<boolean>();
-
-  /**
-   * Emits if the `EditorJS` content has changed when `save` is called
-   */
-  @Output() hasChanged = new EventEmitter<OutputData>();
+  @Input() minHeight?: number;;
 
   /**
    * Emits if the `EditorJS` component is ready
@@ -93,15 +74,35 @@ export class ContentEditorComponent implements OnDestroy, AfterContentInit, Cont
   @Output() isReady = new EventEmitter<boolean>();
 
   /**
+   * Emits if the component is focused
+   */
+  @Output() isFocused = new EventEmitter<boolean>();
+
+  /**
+   * Emits if the component has been touched
+   */
+  @Output() touch = new EventEmitter();
+
+  /**
+   * Emits if the `EditorJS` content has changed when `save` is called
+   */
+  @Output() change = new EventEmitter<Content>();
+
+  /**
+   * Emits if the content from the `EditorJS` instance has been saved to the component value
+   */
+  @Output() save = new EventEmitter<boolean>();
+
+  /**
    * Form field value if used as a field component
    */
-  protected _value: OutputData | undefined;
+  private _value: OutputData | undefined;
 
   /**
    * Component Destroy subject, in your component `ngOnDestroy` method call `.next(true)`
    * and then `.complete()` on the `this.onDestroy$` subject
    */
-  protected readonly onDestroy$ = new Subject<boolean>();
+  private readonly onDestroy$ = new Subject<boolean>();
 
   constructor(
     @Inject(EDITOR_CONFIG) private defaultConfig: EditorConfig,
@@ -131,7 +132,7 @@ export class ContentEditorComponent implements OnDestroy, AfterContentInit, Cont
         sanitizer: this.sanitizer,
         hideToolbar: this.hideToolbar,
         minHeight: this.minHeight,
-      }, this.blocks)
+      }, this.content?.blocks)
     );
     this.changeDetectorRef.markForCheck();
 
@@ -143,30 +144,26 @@ export class ContentEditorComponent implements OnDestroy, AfterContentInit, Cont
       });
 
     this.service
-      .lastChange(this.holder)
+      .hasChanged(this.holder)
       .pipe(takeUntil(this.onDestroy$))
       .subscribe(change => {
-        this.hasChanged.emit(change);
+        this.change.emit({
+          blocks: change.blocks
+        });
       });
 
     this.service
       .hasSaved(this.holder)
       .pipe(takeUntil(this.onDestroy$))
       .subscribe(saved => {
-        this.hasSaved.emit(saved);
+        this.save.emit(saved);
       });
 
     this.focusMonitor.monitor(this.elementRef.nativeElement, true).pipe(
       map(origin => !!origin),
-      tap(focused => {
-        if (focused) {
-          this.isFocused.emit(true);
-        } else {
-          this.isFocused.emit(false);
-        }
-      }),
       takeUntil(this.onDestroy$)
-    ).subscribe(() => {
+    ).subscribe((focused) => {
+      this.isFocused.emit(focused);
       this.onTouch();
     });
   }
@@ -176,14 +173,14 @@ export class ContentEditorComponent implements OnDestroy, AfterContentInit, Cont
    * the touch status on the component
    */
   onTouch(event?: MouseEvent): void {
-    this.isTouched.emit(true);
+    this.touch.emit();
   }
 
   /**
    * Angular Form onChange method, this is a default method that updates the
    * editor instance with blocks on change
    */
-  onChange(data: OutputData): void {
+  onChange(data: Content): void {
     this.writeValue(data);
   }
 
@@ -191,7 +188,7 @@ export class ContentEditorComponent implements OnDestroy, AfterContentInit, Cont
    * Angular Forms value writer, updates the editor
    * @param data The data to write
    */
-  writeValue(data: OutputData): void {
+  writeValue(data: Content): void {
     this._value = data;
     this.service
       .update(this.holder, data)
@@ -203,7 +200,7 @@ export class ContentEditorComponent implements OnDestroy, AfterContentInit, Cont
   /**
    * Angular Forms registerOnChange
    */
-  registerOnChange(fn: (change: OutputData) => void): void {
+  registerOnChange(fn: (change: Content) => void): void {
     this.onChange = fn;
   }
 
@@ -223,11 +220,11 @@ export class ContentEditorComponent implements OnDestroy, AfterContentInit, Cont
       this.onDestroy$.next(true);
       this.onDestroy$.complete();
     }
-    this.hasChanged.complete();
-    this.hasSaved.complete();
-    this.isFocused.complete();
-    this.isTouched.complete();
     this.isReady.complete();
+    this.isFocused.complete();
+    this.touch.complete();
+    this.change.complete();
+    this.save.complete();
     this.service.destroyInstance(this.holder);
   }
 }

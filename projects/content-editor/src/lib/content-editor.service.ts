@@ -21,14 +21,14 @@ export class ContentEditorService {
     savedStates: {
       [key: string]: BehaviorSubject<boolean>;
     },
-    lastChanges: {
+    hasChanged: {
       [key: string]: BehaviorSubject<OutputData>;
     };
   } = {
       editors: {},
       readyStates: {},
       savedStates: {},
-      lastChanges: {}
+      hasChanged: {}
     };
 
   constructor(
@@ -71,8 +71,8 @@ export class ContentEditorService {
         else this.subjects.savedStates[holder].next(false);
 
         const defaultOutputData = { time: 0, version: EditorJS.version ?? '', blocks: [] };
-        if (!this.subjects.lastChanges[holder]) this.subjects.lastChanges[holder] = new BehaviorSubject<OutputData>(editorConfig.data ?? defaultOutputData);
-        else this.subjects.lastChanges[holder].next(editorConfig.data ?? defaultOutputData);
+        if (!this.subjects.hasChanged[holder]) this.subjects.hasChanged[holder] = new BehaviorSubject<OutputData>(editorConfig.data ?? defaultOutputData);
+        else this.subjects.hasChanged[holder].next(editorConfig.data ?? defaultOutputData);
 
         if (!this.subjects.editors[holder]) this.subjects.editors[holder] = new BehaviorSubject<EditorJS | undefined>(editor);
         else this.subjects.editors[holder].next(editor);
@@ -100,7 +100,7 @@ export class ContentEditorService {
         result: OutputData;
       }) => {
         this.subjects.savedStates[holder].next(true);
-        this.subjects.lastChanges[holder].next(response.result);
+        this.subjects.hasChanged[holder].next(response.result);
       })
     );
   }
@@ -149,17 +149,17 @@ export class ContentEditorService {
   }
 
   /**
-   * Subscribe to the `lastChange` state change for the `EditorJS` instance with given holder
+   * Subscribe to the `hasChanged` state change for the `EditorJS` instance with given holder
    */
-  lastChange(holder: string): Observable<OutputData> {
-    if (!this.subjects.lastChanges[holder]) {
-      this.subjects.lastChanges[holder] = new BehaviorSubject<OutputData>({
+  hasChanged(holder: string): Observable<OutputData> {
+    if (!this.subjects.hasChanged[holder]) {
+      this.subjects.hasChanged[holder] = new BehaviorSubject<OutputData>({
         time: 0,
         blocks: [],
         version: EditorJS.version ?? ''
       });
     }
-    return this.subjects.lastChanges[holder].pipe(
+    return this.subjects.hasChanged[holder].pipe(
       distinctUntilChanged((a, b) => (b != undefined && b.time != undefined && b.time === 0) || (a != undefined && b && a.time != undefined && a.time === b.time)),
       filter(change => typeof change !== 'undefined')
     ) as Observable<OutputData>;
@@ -259,14 +259,14 @@ export class ContentEditorService {
    * Internal method to create an default onChange method for `EditorJS`
    */
   private createOnChange(holder: string): (api: API, event: CustomEvent<any>) => void {
-    if (!this.subjects.lastChanges[holder]) {
-      this.subjects.lastChanges[holder] = new BehaviorSubject<OutputData>({ blocks: [] });
+    if (!this.subjects.hasChanged[holder]) {
+      this.subjects.hasChanged[holder] = new BehaviorSubject<OutputData>({ blocks: [] });
     }
 
     return async (api: API, event: CustomEvent<any>) => {
       const data = await api.saver.save();
       if (data) {
-        this.subjects.lastChanges[holder].next(data);
+        this.subjects.hasChanged[holder].next(data);
       }
     };
   }
@@ -309,9 +309,9 @@ export class ContentEditorService {
       delete this.subjects.savedStates[holder];
     }
 
-    if (this.subjects.lastChanges[holder]) {
-      this.subjects.lastChanges[holder].complete();
-      delete this.subjects.lastChanges[holder];
+    if (this.subjects.hasChanged[holder]) {
+      this.subjects.hasChanged[holder].complete();
+      delete this.subjects.hasChanged[holder];
     }
 
     if (this.subjects.editors[holder]) {
