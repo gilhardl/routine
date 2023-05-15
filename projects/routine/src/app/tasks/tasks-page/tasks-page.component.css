@@ -20,8 +20,8 @@ section h1 {
 
 article {
   flex: 0;
-  padding: 0 1rem;
 }
 article.visible {
   flex: 2;
+  padding: 0 1rem;
 }
