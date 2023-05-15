@@ -4,9 +4,9 @@ import { FocusMonitor } from '@angular/cdk/a11y';
 import { Subject, map, take, takeUntil, tap, } from 'rxjs';
 import { EditorConfig, OutputBlockData, OutputData, SanitizerConfig } from '@editorjs/editorjs';
 
-import { DEFAULT_HOLDER_ID, createEditorConfig } from '../editor-config';
-import { ContentEditorService } from '../services/content-editor.service';
-import { EDITOR_CONFIG } from '../content-editor.token';
+import { DEFAULT_HOLDER_ID, createEditorConfig } from './editor-config';
+import { ContentEditorService } from './content-editor.service';
+import { EDITOR_CONFIG } from './content-editor.token';
 
 @Component({
   selector: 'content-editor',

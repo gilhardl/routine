@@ -2,7 +2,7 @@ import { ApplicationRef, Inject, Injectable, NgZone } from '@angular/core';
 import { BehaviorSubject, Observable, distinctUntilChanged, filter, of, switchMap, take, tap } from 'rxjs';
 import EditorJS, { API, EditorConfig, OutputData } from '@editorjs/editorjs';
 
-import { EDITOR_CONFIG } from '../content-editor.token';
+import { EDITOR_CONFIG } from './content-editor.token';
 
 @Injectable({
   providedIn: 'root'

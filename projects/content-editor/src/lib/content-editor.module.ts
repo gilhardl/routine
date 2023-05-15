@@ -4,7 +4,7 @@ import { EditorConfig } from '@editorjs/editorjs';
 
 import { createEditorConfig } from './editor-config';
 import { EDITOR_CONFIG } from './content-editor.token';
-import { ContentEditorComponent } from './components/content-editor.component';
+import { ContentEditorComponent } from './content-editor.component';
 
 @NgModule({
   imports: [
